@@ -85,7 +85,7 @@ func recordsList(e *core.RequestEvent) error {
 		searchProvider.CountCol("_rowid_")
 		*/
 		// PostgreSQL:
-		searchProvider.CountCol("ctid");
+		searchProvider.CountCol("ctid")
 	}
 
 	records := []*core.Record{}
@@ -282,7 +282,7 @@ func recordCreate(responseWriteAfterTx bool, optFinalizer func(data any) error) 
 			// export the dummy record data into db params
 			dummyExport, err := dummyRecord.DBExport(e.App)
 			if err != nil {
-				return e.BadRequestError("Failed to create record", fmt.Errorf("dummy DBExport error: %w", err))
+				return e.UnauthorizedError("Failed to create record", fmt.Errorf("dummy DBExport error: %w", err))
 			}
 
 			dummyParams := make(dbx.Params, len(dummyExport))
@@ -325,7 +325,7 @@ func recordCreate(responseWriteAfterTx bool, optFinalizer func(data any) error) 
 
 				expr, err := search.FilterData(*dummyCollection.CreateRule).BuildExpr(resolver)
 				if err != nil {
-					return e.BadRequestError("Failed to create record", fmt.Errorf("create rule build expression failure: %w", err))
+					return e.UnauthorizedError("Failed to create record", fmt.Errorf("create rule build expression failure: %w", err))
 				}
 				ruleQuery.AndWhere(expr)
 
@@ -334,7 +334,7 @@ func recordCreate(responseWriteAfterTx bool, optFinalizer func(data any) error) 
 				var exists int
 				err = ruleQuery.Limit(1).Row(&exists)
 				if err != nil || exists == 0 {
-					return e.BadRequestError("Failed to create record", fmt.Errorf("create rule failure: %w", err))
+					return e.UnauthorizedError("Failed to create record", fmt.Errorf("create rule failure: %w", err))
 				}
 			}
 
